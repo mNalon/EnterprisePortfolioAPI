@@ -10,5 +10,9 @@
     "express": "~4.16.0",
     "mongoose": "^5.4.13",
     "morgan": "~1.9.0"
+  },
+  "devDependencies": {
+    "express-mongoose-generator": "^3.0.3",
+    "migrate-mongoose": "^3.2.2"
   }
 }
