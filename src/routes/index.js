@@ -5,8 +5,8 @@ const user = require('./user');
 const role = require('./role');
 
 /* GET home page. */
-router.get('/', function(_, res) {
-  res.send('OK');
+router.get('/', function (_, res) {
+	res.send('OK');
 });
 
 router.use('/user', user);
