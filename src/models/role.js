@@ -2,7 +2,11 @@ var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
 
 var RoleSchema = new Schema({
-	'name' : String,
+	'name' : { 
+		type: String, 
+		unique: true,
+		required: true 
+	},
 	'actions' : [Schema.Types.ObjectId]
 });
 
