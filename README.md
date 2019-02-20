@@ -29,6 +29,12 @@ export DB_URL=<connection url with the mongo db>
 npm install
 ```
 
+- Run the required database migrations:
+
+```
+npm run migrate
+```
+
 ### RUN
 
 ```
