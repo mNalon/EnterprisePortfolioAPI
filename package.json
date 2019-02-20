@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./src/bin/www"
+    "start": "node ./src/bin/www",
+    "watch": "nodemon ./src/bin/www",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
@@ -14,6 +17,7 @@
   "devDependencies": {
     "eslint": "^5.14.1",
     "express-mongoose-generator": "^3.0.3",
-    "migrate-mongoose": "^3.2.2"
+    "migrate-mongoose": "^3.2.2",
+    "nodemon": "^1.18.10"
   }
 }
