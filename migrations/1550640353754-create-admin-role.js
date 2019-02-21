@@ -20,12 +20,13 @@ exports.up = function up (done) {
 			}
 		})
 		.then((actions) => {
-			return RoleModel
+			RoleModel
 				.create({
 					name: ROLE_NAME,
 					actions: actions.map(action => action._id)
 				})
-				.then(() => done());
+				.then(() => done())
+				.catch(done);
 		})
 		.catch(done);
 };
