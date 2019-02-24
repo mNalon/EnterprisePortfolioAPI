@@ -1,6 +1,6 @@
 var RoleModel = require('../models/role.js');
 
-const createErrorResponse = require('./util').createErrorResponse;
+const createErrorResponse = require('../util').createErrorResponse;
 
 const getRoleError = createErrorResponse('Error when getting Role.');
 const roleNotFoundError = createErrorResponse('No such Role');

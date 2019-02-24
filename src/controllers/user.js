@@ -1,14 +1,37 @@
 var UserModel = require('../models/user.js');
 
-const createErrorResponse = require('./util').createErrorResponse;
+const createErrorResponse = require('../util').createErrorResponse;
+
+const passport = require('../auth');
 
 const getUserError = createErrorResponse('Error when getting User.');
 const userNotFoundError = createErrorResponse('No such User');
 const createUserError = createErrorResponse('Error when creating User');
 const updateUserError = createErrorResponse('Error when updating User');
-const deleteUserError = createErrorResponse('Error when deleting the User');
+const deleteUserError = createErrorResponse('Error when deleting User');
+const authUserError = createErrorResponse('Error when authenticating User.');
 
 module.exports = {
+	login: function (req, res, next) {
+		passport.authenticate('local', function (err, user, info) {
+			if (err) return res.status(500).json(authUserError(err));
+			if (!user) return res.status(401).json(info); 
+			req.logIn(user, function (err) {
+				if (err) return res.status(500).json(authUserError(err));
+				return res.status(200).json(user);
+			});
+		})(req, res, next);
+	},
+
+	sessionInfo: function (req, res) {
+		return res.json(req.user);
+	},
+
+	logout: function (req, res) {
+		req.logout();
+		res.status(200).json({message:'Logged out'});
+	},
+
 	list: function (req, res) {
 		UserModel.find(function (err, users) {
 			if (err) {
@@ -79,6 +102,9 @@ module.exports = {
 		UserModel.findByIdAndRemove(id, function (err, user) {
 			if (err) {
 				return res.status(500).json(deleteUserError(err));
+			}
+			if (!user) {
+				return res.status(404).json(userNotFoundError());
 			}
 			return res.status(200).json(user);
 		});

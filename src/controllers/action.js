@@ -1,6 +1,6 @@
 var ActionModel = require('../models/action.js');
 
-const createErrorResponse = require('./util').createErrorResponse;
+const createErrorResponse = require('../util').createErrorResponse;
 
 const getActionError = createErrorResponse('Error when getting Action.');
 
