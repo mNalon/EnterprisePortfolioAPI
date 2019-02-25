@@ -5,6 +5,7 @@ const createErrorResponse = require('../util').createErrorResponse;
 const passport = require('../auth');
 
 const getUserError = createErrorResponse('Error when getting User.');
+const getRoleAndActionsError = createErrorResponse('Error when getting Role and Actions.');
 const userNotFoundError = createErrorResponse('No such User');
 const createUserError = createErrorResponse('Error when creating User');
 const updateUserError = createErrorResponse('Error when updating User');
@@ -33,25 +34,32 @@ module.exports = {
 	},
 
 	list: function (req, res) {
-		UserModel.find(function (err, users) {
-			if (err) {
-				return res.status(500).json(getUserError(err));
-			}
-			return res.json(users);
-		});
+		// hiding the admin user: muhahaha!
+		UserModel
+			.find({ userName: { $nin: [ 'nalon' ] } })
+			.populate({
+				path: 'role',
+				populate: { path: 'actions' }
+			})
+			.then(users => res.json(users))
+			.catch(err => res.status(500).json(getUserError(err)));
 	},
 
 	show: function (req, res) {
 		var id = req.params.id;
-		UserModel.findOne({_id: id}, function (err, user) {
-			if (err) {
-				return res.status(500).json(getUserError(err));
-			}
-			if (!user) {
-				return res.status(404).json(userNotFoundError());
-			}
-			return res.json(user);
-		});
+		UserModel
+			.findOne({_id: id})
+			.populate({
+				path: 'role',
+				populate: { path: 'actions' }
+			})
+			.then(user => {
+				if (!user) {
+					return res.status(404).json(userNotFoundError());
+				}
+				return res.json(user);
+			})
+			.catch(err => res.status(500).json(getUserError(err)));
 	},
 
 	create: function (req, res) {
@@ -67,46 +75,61 @@ module.exports = {
 			if (err) {
 				return res.status(500).json(createUserError(err));
 			}
-			return res.status(201).json(user);
+			user.password = undefined;
+			return UserModel
+				.populate(user, {
+					path: 'role',
+					populate: { path: 'actions' }
+				})
+				.then(populatedUser => res.status(201).json(populatedUser))
+				.catch(err => res.status(500).json(getRoleAndActionsError(err)));
 		});
 	},
 
 	update: function (req, res) {
 		var id = req.params.id;
-		UserModel.findOne({_id: id}, function (err, user) {
-			if (err) {
-				return res.status(500).json(getUserError(err));
-			}
-			if (!user) {
-				return res.status(404).json(userNotFoundError());
-			}
-
-			user.name = req.body.name ? req.body.name : user.name;
-			user.userName = req.body.userName ? req.body.userName : user.userName;
-			user.role = req.body.role ? req.body.role : user.role;
-			user.email = req.body.email ? req.body.email : user.email;
-			user.email = req.body.password ? req.body.password : user.password;
-			
-			user.save(function (err, user) {
-				if (err) {
-					return res.status(500).json(updateUserError(err));
+		UserModel
+			.findOne({_id: id})
+			.then(user => {
+				if (!user) {
+					return res.status(404).json(userNotFoundError());
 				}
-
-				return res.json(user);
-			});
-		});
+				user.name = req.body.name ? req.body.name : user.name;
+				user.userName = req.body.userName ? req.body.userName : user.userName;
+				user.role = req.body.role ? req.body.role : user.role;
+				user.email = req.body.email ? req.body.email : user.email;
+				user.password = req.body.password ? req.body.password : user.password;
+				user.save(function (err, user) {
+					if (err) {
+						return res.status(500).json(updateUserError(err));
+					}
+					user.password = undefined;
+					return UserModel
+						.populate(user, {
+							path: 'role',
+							populate: { path: 'actions' }
+						})
+						.then(populatedUser => res.status(201).json(populatedUser))
+						.catch(err => res.status(500).json(getRoleAndActionsError(err)));
+				});
+			})
+			.catch(err => res.status(500).json(getUserError(err)));
 	},
 
 	remove: function (req, res) {
 		var id = req.params.id;
-		UserModel.findByIdAndRemove(id, function (err, user) {
-			if (err) {
-				return res.status(500).json(deleteUserError(err));
-			}
-			if (!user) {
-				return res.status(404).json(userNotFoundError());
-			}
-			return res.status(200).json(user);
-		});
+		UserModel
+			.findByIdAndRemove(id)
+			.populate({
+				path: 'role',
+				populate: { path: 'actions' }
+			})
+			.then(user => {
+				if (!user) {
+					return res.status(404).json(userNotFoundError());
+				}
+				return res.status(200).json(user);
+			})
+			.catch(err => res.status(500).json(deleteUserError(err)));
 	}
 };

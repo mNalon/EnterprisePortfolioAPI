@@ -7,6 +7,10 @@ module.exports.serialize = (user, done) => {
 module.exports.deserializeUser = (id, done) => {
 	UserModel
 		.findById(id)
+		.populate({
+			path: 'role',
+			populate: { path: 'actions' }
+		})
 		.then(user => done(null, user))
 		.catch(done);
 };

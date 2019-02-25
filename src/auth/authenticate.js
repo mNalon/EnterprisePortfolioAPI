@@ -8,6 +8,10 @@ const incorrectPasswordError = createErrorResponse('Incorrect password.');
 module.exports = 	function (userName, password, done) {
 	UserModel
 		.findOne({ userName })
+		.populate({
+			path: 'role',
+			populate: { path: 'actions' }
+		})
 		.select('+password')
 		.then((user) => {
 			if (!user) {
@@ -17,6 +21,8 @@ module.exports = 	function (userName, password, done) {
 			return user.verifyPassword(password)
 				.then((valid) => {
 					if (!valid) return done(null, false, incorrectPasswordError());
+					//tweak to not reveal password 
+					user.password = undefined;
 					return done(null, user);
 				});
 		})
