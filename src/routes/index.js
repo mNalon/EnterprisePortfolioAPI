@@ -10,7 +10,7 @@ router.get('/', function (_, res) {
 	res.send('OK');
 });
 
-router.use('/user', user);
+router.use('/user' , user);
 router.use('/role', role);
 router.use('/action', action);
 

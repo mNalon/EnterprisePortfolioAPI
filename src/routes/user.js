@@ -1,28 +1,23 @@
 var express = require('express');
 var router = express.Router();
-var UserController = require('../controllers/user');
 
-// router.post('/login', 
-// 	passport.authenticate('local', { 
-// 		successRedirect : '/user/me',
-// 		failureRedirect : '/user/logout',
-// 		failureFlash: true 
-// 	}), UserController.sessionInfo);
+var UserController = require('../controllers/user');
+const auth = require('../middlewares/auth');
 
 router.post('/login', UserController.login);
 
-router.get('/me', UserController.sessionInfo);
+router.get('/me', auth.isUserLogged, UserController.sessionInfo);
 
 router.get('/logout', UserController.logout);
 
-router.get('/list', UserController.list);
+router.get('/list', auth.accessControl('view_users'), UserController.list);
 
-router.get('/:id', UserController.show);
+router.get('/:id', auth.accessControl('view_users'), UserController.show);
 
-router.post('/', UserController.create);
+router.post('/', auth.accessControl('create_users'), UserController.create);
 
-router.put('/:id', UserController.update);
+router.put('/:id', auth.accessControl('edit_users'), UserController.update);
 
-router.delete('/:id', UserController.remove);
+router.delete('/:id', auth.accessControl('edit_users'), UserController.remove);
 
 module.exports = router;
