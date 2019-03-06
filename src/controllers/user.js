@@ -30,7 +30,7 @@ module.exports = {
 
 	logout: function (req, res) {
 		req.logout();
-		res.status(200).json({message:'Logged out'});
+		res.redirect('/');
 	},
 
 	list: function (req, res) {
