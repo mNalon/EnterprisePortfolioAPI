@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "debug": "node --nolazy --inspect-brk=5858 ./src/bin/www",
     "start": "node ./src/bin/www",
     "watch": "nodemon ./src/bin/www",
     "lint": "eslint ./src",
@@ -10,6 +11,7 @@
     "migrate": "./node_modules/.bin/migrate up --autosync --config migrate.js"
   },
   "dependencies": {
+    "@hapi/joi": "^17.1.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.3",
     "express": "~4.16.0",
