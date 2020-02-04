@@ -6,13 +6,14 @@ var UserController = require('../controllers/user');
 const { auth, validation } = require('../middlewares');
 
 const UserJoiSchema = ({ requirePass = false } = {}) => Joi.object({
+	_id: Joi.string(),
 	name: Joi.string().required(),
 	userName: Joi.string().required(),
 	role: Joi.string().required(),
 	email: Joi.string().email()
 		.required(),
 	password: requirePass? Joi.string().required() : Joi.string()
-});
+}).options({ stripUnknown: true });
 
 router.post('/login', UserController.login);
 
