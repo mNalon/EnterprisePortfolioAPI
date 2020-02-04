@@ -98,7 +98,9 @@ module.exports = {
 				user.userName = req.body.userName ? req.body.userName : user.userName;
 				user.role = req.body.role ? req.body.role : user.role;
 				user.email = req.body.email ? req.body.email : user.email;
-				user.password = req.body.password ? req.body.password : user.password;
+				if(req.body.password){
+					user.password = req.body.password;
+				}
 				user.save(function (err, user) {
 					if (err) {
 						return res.status(500).json(updateUserError(err));
